@@ -6,7 +6,7 @@
   <title>상생협력부 소식함</title>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-  <style>69dde5deaaba882197f87a35
+  <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Noto Sans KR', sans-serif; background: #f5f6fa; min-height: 100vh; color: #1e1f2e; }
     .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
@@ -23,9 +23,9 @@
     .card-anim { animation: cardIn 0.35s ease-out both; }
     @keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
     .cat-card { background: #fff; border: 1px solid #e8eaf0; border-radius: 16px; padding: 28px 24px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; }
-    .cat-card:hover { border-color: #4f46e5; box-shadow: 0 4px 20px rgba(0,130,51,0.08); }
+    .cat-card:hover { border-color: #4f46e5; box-shadow: 0 4px 20px rgba(79,70,229,0.08); }
     .news-row { background: #fff; border: 1px solid #e8eaf0; border-radius: 12px; padding: 18px 20px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .news-row:hover { border-color: #4f46e5; box-shadow: 0 2px 12px rgba(0,130,51,0.07); }
+    .news-row:hover { border-color: #4f46e5; box-shadow: 0 2px 12px rgba(79,70,229,0.07); }
     .back-btn { display: inline-flex; align-items: center; gap: 6px; color: #9094a8; font-size: 14px; cursor: pointer; border: none; background: none; font-family: inherit; margin-bottom: 20px; padding: 0; }
     .back-btn:hover { color: #4f46e5; }
     .error-msg { color: #ef4444; font-size: 12px; margin-bottom: 12px; display: none; }
@@ -60,7 +60,6 @@
     <div id="view-category" style="display:none;"></div>
   </main>
 
-  <!-- Add/Edit Modal -->
   <div id="modal-add" class="overlay">
     <div class="modal">
       <button onclick="closeAddModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;color:#aaa;"><i data-lucide="x" style="width:20px;height:20px;"></i></button>
@@ -88,7 +87,6 @@
     </div>
   </div>
 
-  <!-- Delete Modal -->
   <div id="modal-delete" class="overlay">
     <div class="modal" style="max-width:360px;text-align:center;">
       <div style="width:48px;height:48px;background:#fef2f2;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
@@ -109,15 +107,15 @@
     // ───────────────────────────────────────────────
     // ★ 여기를 수정하세요
     const JSONBIN_API_KEY = '$2a$10$Ix/Ox/OIqmwH8wDW/tg/X.3/nEOBFR.x2M8WoGqBrdJcFkQdWyPqG';
-    const ADMIN_PASSWORD = '1234'; // ← 비밀번호 변경
+    const BIN_ID = '69dde842aaba882197f883c1';
+    const ADMIN_PASSWORD = '1234';
     // ───────────────────────────────────────────────
 
     const JSONBIN_URL = 'https://api.jsonbin.io/v3/b';
-    let BIN_ID = '69dde842aaba882197f883c1';
-
     const categoryColors = ['#4f46e5','#f59e0b','#ef4444','#ec4899','#06b6d4','#8b5cf6','#84cc16','#f97316'];
     const colorMap = {};
     let colorIdx = 0;
+
     function getCatColor(cat) {
       if (!colorMap[cat]) { colorMap[cat] = categoryColors[colorIdx % categoryColors.length]; colorIdx++; }
       return colorMap[cat];
@@ -128,8 +126,6 @@
     let currentCategory = null;
     let editId = null;
     let deleteTarget = null;
-
-    // ── JSONBIN API ──────────────────────────────────
 
     async function fetchData() {
       showLoading();
@@ -146,15 +142,6 @@
     }
 
     async function saveData() {
-      if (!BIN_ID) return;
-      const dataToSave = allData.length === 0 ? [{"_empty": true}] : allData;
-      await fetch(`${JSONBIN_URL}/${BIN_ID}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-key': JSONBIN_API_KEY
-        },    async function saveData() {
-      if (!BIN_ID) return;
       const dataToSave = allData.length === 0 ? [{"_empty": true}] : allData;
       await fetch(`${JSONBIN_URL}/${BIN_ID}`, {
         method: 'PUT',
@@ -165,15 +152,11 @@
         body: JSON.stringify(dataToSave)
       });
     }
-        body: JSON.stringify(dataToSave)
-      });
-    }
 
     function generateId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
     function getCategories() {
       return [...new Set(allData.filter(d => !d._empty).map(d => d.category).filter(Boolean))].sort();
     }
-    // ── RENDER ───────────────────────────────────────
 
     function showLoading() {
       document.getElementById('view-home').innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
@@ -203,7 +186,7 @@
         lucide.createIcons(); return;
       }
       el.innerHTML = `
-        <p style="color:#b0b4c8;font-size:12px;margin-bottom:16px;">총 ${cats.length}개 카테고리 · ${allData.length}건의 소식</p>
+        <p style="color:#b0b4c8;font-size:12px;margin-bottom:16px;">총 ${cats.length}개 카테고리 · ${allData.filter(d=>!d._empty).length}건의 소식</p>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;">
           ${cats.map((cat, i) => {
             const count = allData.filter(d => d.category === cat).length;
@@ -229,7 +212,7 @@
     function renderCategory() {
       document.getElementById('view-home').style.display = 'none';
       document.getElementById('view-category').style.display = '';
-      const items = allData.filter(d => d.category === currentCategory)
+      const items = allData.filter(d => d.category === currentCategory && !d._empty)
         .sort((a,b) => (b.published_at||b.created_at||'').localeCompare(a.published_at||a.created_at||''));
       const color = getCatColor(currentCategory);
       const el = document.getElementById('view-category');
@@ -260,7 +243,7 @@
                     ${dateStr ? `<span style="font-size:12px;color:#c0c4d8;">${dateStr}</span>` : ''}
                     <div style="display:flex;gap:4px;">
                       <button onclick="event.stopPropagation();openEditModal('${item.id}')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:6px;color:#ccc;" onmouseenter="this.style.color='#4f46e5'" onmouseleave="this.style.color='#ccc'">
-                        <i data-lucide="edit" style="width:15px;height:15px;"></i>
+                        <i data-lucide="pencil" style="width:15px;height:15px;"></i>
                       </button>
                       <button onclick="event.stopPropagation();openDeleteModal('${item.id}')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:6px;color:#ccc;" onmouseenter="this.style.color='#ef4444'" onmouseleave="this.style.color='#ccc'">
                         <i data-lucide="trash-2" style="width:15px;height:15px;"></i>
@@ -274,13 +257,9 @@
       lucide.createIcons();
     }
 
-    // ── NAVIGATION ───────────────────────────────────
-
     function goHome() { currentView = 'home'; currentCategory = null; render(); }
     function goCategory(cat) { currentView = 'category'; currentCategory = cat; render(); }
     function openLink(url) { if (url && url !== '#') window.open(url, '_blank', 'noopener,noreferrer'); }
-
-    // ── CATEGORY SELECT ──────────────────────────────
 
     function refreshCategorySelect() {
       const sel = document.getElementById('f-category-select');
@@ -295,8 +274,6 @@
       if (val === '__new__') { newInput.style.display = ''; newInput.focus(); }
       else { newInput.style.display = 'none'; newInput.value = ''; }
     }
-
-    // ── ADD / EDIT MODAL ─────────────────────────────
 
     function openAddModal() {
       editId = null;
@@ -367,8 +344,6 @@
       else render();
     }
 
-    // ── DELETE MODAL ─────────────────────────────────
-
     function openDeleteModal(id) {
       deleteTarget = id;
       document.getElementById('d-password').value = '';
@@ -391,7 +366,7 @@
       await saveData();
       btn.disabled = false; btn.textContent = '삭제';
       closeDeleteModal();
-      if (currentCategory && allData.filter(d => d.category === currentCategory).length === 0) goHome();
+      if (currentCategory && allData.filter(d => d.category === currentCategory && !d._empty).length === 0) goHome();
       else render();
     }
 
