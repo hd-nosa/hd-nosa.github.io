@@ -13,22 +13,22 @@
     .overlay.active { display: flex; }
     .modal { background: #fff; border: 1px solid #e8eaf0; border-radius: 16px; width: 100%; max-width: 460px; padding: 32px; position: relative; animation: modalIn 0.25s ease-out; }
     @keyframes modalIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
-    .btn-primary { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: linear-gradient(135deg, #4f46e5, #818cf8); border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: linear-gradient(135deg, #008233, #818cf8); border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
     .btn-secondary { padding: 10px 20px; background: #f0f1f7; border: none; border-radius: 8px; color: #9094a8; font-size: 13px; cursor: pointer; font-family: inherit; }
     .btn-danger { padding: 10px 24px; background: #ef4444; border: none; border-radius: 8px; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
     .field { margin-bottom: 16px; }
     .field label { display: block; color: #9094a8; font-size: 12px; font-weight: 500; margin-bottom: 6px; }
     .field input, .field textarea, .field select { width: 100%; padding: 10px 14px; background: #f8f9fc; border: 1px solid #e0e2ec; border-radius: 8px; color: #333; font-size: 14px; outline: none; font-family: inherit; }
-    .field input:focus, .field textarea:focus, .field select:focus { border-color: #4f46e5; }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color: #008233; }
     .tag-pill { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 500; }
     .card-anim { animation: cardIn 0.35s ease-out both; }
     @keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
     .cat-card { background: #fff; border: 1px solid #e8eaf0; border-radius: 16px; padding: 28px 24px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; }
-    .cat-card:hover { border-color: #4f46e5; box-shadow: 0 4px 20px rgba(79,70,229,0.08); }
+    .cat-card:hover { border-color: #008233; box-shadow: 0 4px 20px rgba(79,70,229,0.08); }
     .news-row { background: #fff; border: 1px solid #e8eaf0; border-radius: 12px; padding: 18px 20px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .news-row:hover { border-color: #4f46e5; box-shadow: 0 2px 12px rgba(79,70,229,0.07); }
+    .news-row:hover { border-color: #008233; box-shadow: 0 2px 12px rgba(79,70,229,0.07); }
     .back-btn { display: inline-flex; align-items: center; gap: 6px; color: #9094a8; font-size: 14px; cursor: pointer; border: none; background: none; font-family: inherit; margin-bottom: 20px; padding: 0; }
-    .back-btn:hover { color: #4f46e5; }
+    .back-btn:hover { color: #008233; }
     .error-msg { color: #ef4444; font-size: 12px; margin-bottom: 12px; display: none; }
   </style>
 </head>
@@ -39,7 +39,7 @@
     <div style="max-width:1100px;margin:0 auto;padding:32px 24px 24px;">
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <div style="display:flex;align-items:center;gap:14px;cursor:pointer;" onclick="goHome()">
-          <div style="width:42px;height:42px;background:linear-gradient(135deg,#4f46e5,#818cf8);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+          <div style="width:42px;height:42px;background:linear-gradient(135deg,#008233,#818cf8);border-radius:10px;display:flex;align-items:center;justify-content:center;">
             <i data-lucide="newspaper" style="width:20px;height:20px;color:#fff;"></i>
           </div>
           <div>
@@ -126,7 +126,7 @@
   <script>
     const STORAGE_KEY = 'songsaeng_data';
     const ADMIN_PASSWORD = '4587'; // ← 여기서 비밀번호 변경하세요
-    const categoryColors = ['#4f46e5','#10b981','#f59e0b','#ef4444','#ec4899','#06b6d4','#8b5cf6','#84cc16'];
+    const categoryColors = ['#008233','#10b981','#f59e0b','#ef4444','#ec4899','#06b6d4','#8b5cf6','#84cc16'];
     const colorMap = {};
     let colorIdx = 0;
 
@@ -233,7 +233,7 @@
                   <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
                     ${dateStr ? `<span style="font-size:12px;color:#c0c4d8;">${dateStr}</span>` : ''}
                     <div style="display:flex;gap:4px;">
-                      <button onclick="event.stopPropagation();openEditModal('${item.id}')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:6px;color:#ccc;" onmouseenter="this.style.color='#4f46e5'" onmouseleave="this.style.color='#ccc'">
+                      <button onclick="event.stopPropagation();openEditModal('${item.id}')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:6px;color:#ccc;" onmouseenter="this.style.color='#008233'" onmouseleave="this.style.color='#ccc'">
                         <i data-lucide="edit" style="width:15px;height:15px;"></i>
                       </button>
                       <button onclick="event.stopPropagation();openDeleteModal('${item.id}')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:6px;color:#ccc;" onmouseenter="this.style.color='#ef4444'" onmouseleave="this.style.color='#ccc'">
