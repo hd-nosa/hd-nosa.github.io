@@ -140,7 +140,7 @@
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'X-Master-Key': JSONBIN_API_KEY,
+              'X-Access-Key': JSONBIN_API_KEY,
               'X-Bin-Name': 'songsaeng',
               'X-Bin-Private': 'true'
             },
@@ -152,7 +152,7 @@
           allData = [];
         } else {
           const res = await fetch(`${JSONBIN_URL}/${BIN_ID}/latest`, {
-            headers: { 'X-Master-Key': JSONBIN_API_KEY }
+            headers: { 'X-Access-Key': JSONBIN_API_KEY }
           });
           const json = await res.json();
           allData = json.record || [];
@@ -169,7 +169,7 @@
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'X-Master-Key': JSONBIN_API_KEY
+          'X-Access-Key': JSONBIN_API_KEY
         },
         body: JSON.stringify(allData)
       });
