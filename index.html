@@ -131,35 +131,48 @@
 
     // ── JSONBIN API ──────────────────────────────────
 
-async function fetchData() {
-  showLoading();
-  try {
-    const res = await fetch(`${JSONBIN_URL}/${BIN_ID}/latest`, {
-      headers: { 'X-Master-key': JSONBIN_API_KEY }
-    });
-    const json = await res.json();
-    allData = json.record || [];
-  } catch(e) {
-    allData = [];
-  }
-  render();
-}
+    async function fetchData() {
+      showLoading();
+      try {
+        const res = await fetch(`${JSONBIN_URL}/${BIN_ID}/latest`, {
+          headers: { 'X-Master-key': JSONBIN_API_KEY }
+        });
+        const json = await res.json();
+        allData = (json.record || []).filter(d => !d._empty);
+      } catch(e) {
+        allData = [];
+      }
+      render();
+    }
 
     async function saveData() {
       if (!BIN_ID) return;
+      const dataToSave = allData.length === 0 ? [{"_empty": true}] : allData;
+      await fetch(`${JSONBIN_URL}/${BIN_ID}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-key': JSONBIN_API_KEY
+        },    async function saveData() {
+      if (!BIN_ID) return;
+      const dataToSave = allData.length === 0 ? [{"_empty": true}] : allData;
       await fetch(`${JSONBIN_URL}/${BIN_ID}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'X-Master-key': JSONBIN_API_KEY
         },
-        body: JSON.stringify(allData)
+        body: JSON.stringify(dataToSave)
+      });
+    }
+        body: JSON.stringify(dataToSave)
       });
     }
 
     function generateId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
-    function getCategories() { return [...new Set(allData.map(d => d.category).filter(Boolean))].sort(); }
-
+    function getCategories() {
+      return [...new Set(allData.filter(d => !d._empty).map(d => d.category).filter(Boolean))].sort();
+    }
     // ── RENDER ───────────────────────────────────────
 
     function showLoading() {
