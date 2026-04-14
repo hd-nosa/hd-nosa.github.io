@@ -11,7 +11,7 @@
     body { font-family: 'Noto Sans KR', sans-serif; background: #f5f6fa; min-height: 100vh; color: #1e1f2e; }
     .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
     .overlay.active { display: flex; }
-    .modal { background: #fff; border: 1px solid #e8eaf0; border-radius: 16px; width: 100%; max-width: 460px; padding: 32px; position: relative; animation: modalIn 0.25s ease-out; }
+    .modal { background: #fff; border: 1px solid #e8eaf0; border-radius: 16px; width: 100%; max-width: 460px; padding: 32px; position: relative; animation: modalIn 0.25s ease-out; max-height: 90vh; overflow-y: auto; }
     @keyframes modalIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
     .btn-primary { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: linear-gradient(135deg, #008233, #00b84a); border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
     .btn-secondary { padding: 10px 20px; background: #f0f1f7; border: none; border-radius: 8px; color: #9094a8; font-size: 13px; cursor: pointer; font-family: inherit; }
@@ -24,12 +24,15 @@
     .card-anim { animation: cardIn 0.35s ease-out both; }
     @keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
     .cat-card { background: #fff; border: 1px solid #e8eaf0; border-radius: 16px; padding: 28px 24px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; }
-    .cat-card:hover { border-color: #008233; box-shadow: 0 4px 20px rgba(79,70,229,0.08); }
+    .cat-card:hover { border-color: #008233; box-shadow: 0 4px 20px rgba(0,130,51,0.08); }
     .news-row { background: #fff; border: 1px solid #e8eaf0; border-radius: 12px; padding: 18px 20px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .news-row:hover { border-color: #008233; box-shadow: 0 2px 12px rgba(79,70,229,0.07); }
+    .news-row:hover { border-color: #008233; box-shadow: 0 2px 12px rgba(0,130,51,0.07); }
     .back-btn { display: inline-flex; align-items: center; gap: 6px; color: #9094a8; font-size: 14px; cursor: pointer; border: none; background: none; font-family: inherit; margin-bottom: 20px; padding: 0; }
     .back-btn:hover { color: #008233; }
     .error-msg { color: #ef4444; font-size: 12px; margin-bottom: 12px; display: none; }
+    .loading { display: flex; align-items: center; justify-content: center; padding: 80px 20px; }
+    .spinner { width: 32px; height: 32px; border: 3px solid #e8eaf0; border-top-color: #008233; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -37,13 +40,13 @@
   <!-- Header -->
   <header style="background:#fff;border-bottom:1px solid #e8eaf0;">
     <div style="max-width:1100px;margin:0 auto;padding:32px 24px 24px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
         <div style="display:flex;align-items:center;gap:14px;cursor:pointer;" onclick="goHome()">
-          <div style="width:42px;height:42px;background:linear-gradient(135deg,#008233,#00b84a);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+          <div style="width:42px;height:42px;background:linear-gradient(135deg,#008233,#00b84a);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <i data-lucide="newspaper" style="width:20px;height:20px;color:#fff;"></i>
           </div>
           <div>
-            <h1 style="font-size:22px;font-weight:700;color:#1e1f2e;letter-spacing:-0.5px;">상생협력부 소식함</h1>
+            <h1 style="font-size:20px;font-weight:700;color:#1e1f2e;letter-spacing:-0.5px;">상생협력부 소식함</h1>
             <p style="color:#9094a8;font-size:13px;margin-top:2px;">카드뉴스·교섭 소식·홍보물을 한곳에서</p>
           </div>
         </div>
@@ -65,7 +68,6 @@
     <div class="modal">
       <button onclick="closeAddModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;color:#aaa;"><i data-lucide="x" style="width:20px;height:20px;"></i></button>
       <h2 id="modal-add-title" style="font-size:19px;font-weight:700;margin-bottom:24px;">소식 등록</h2>
-
       <div class="field">
         <label>제목 *</label>
         <input id="f-title" placeholder="소식 제목">
@@ -98,7 +100,7 @@
       <div id="add-error" class="error-msg"></div>
       <div style="display:flex;gap:10px;justify-content:flex-end;">
         <button class="btn-secondary" onclick="closeAddModal()">취소</button>
-        <button class="btn-primary" onclick="handleSubmit()">저장</button>
+        <button class="btn-primary" onclick="handleSubmit()" id="submit-btn">저장</button>
       </div>
     </div>
   </div>
@@ -118,15 +120,23 @@
       <div id="delete-error" class="error-msg"></div>
       <div style="display:flex;gap:10px;justify-content:center;">
         <button class="btn-secondary" onclick="closeDeleteModal()">취소</button>
-        <button class="btn-danger" onclick="confirmDelete()">삭제</button>
+        <button class="btn-danger" onclick="confirmDelete()" id="delete-btn">삭제</button>
       </div>
     </div>
   </div>
 
   <script>
-    const STORAGE_KEY = 'songsaeng_data';
-    const ADMIN_PASSWORD = '4587'; // ← 여기서 비밀번호 변경하세요
-    const categoryColors = ['#008233','#10b981','#f59e0b','#ef4444','#ec4899','#06b6d4','#8b5cf6','#84cc16'];
+    // ───────────────────────────────────────────────
+    // ★ 여기를 수정하세요
+    const GITHUB_TOKEN = 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
+    const GITHUB_OWNER = 'hd-nosa';
+    const GITHUB_REPO = 'hd-nosa.github.io';
+    const DATA_FILE_PATH = 'data.json';
+    const ADMIN_PASSWORD = '1234'; // ← 비밀번호 변경
+    // ───────────────────────────────────────────────
+
+    const API_BASE = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE_PATH}`;
+    const categoryColors = ['#008233','#f59e0b','#ef4444','#ec4899','#06b6d4','#8b5cf6','#84cc16','#f97316'];
     const colorMap = {};
     let colorIdx = 0;
 
@@ -136,19 +146,55 @@
     }
 
     let allData = [];
-    let currentView = 'home'; // 'home' | 'category'
+    let fileSha = null;
+    let currentView = 'home';
     let currentCategory = null;
     let editId = null;
     let deleteTarget = null;
 
-    function loadData() {
-      try { allData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch(e) { allData = []; }
+    // ── GITHUB API ───────────────────────────────────
+
+    async function fetchData() {
+      showLoading();
+      try {
+        const res = await fetch(API_BASE, {
+          headers: { Authorization: `token ${GITHUB_TOKEN}`, Accept: 'application/vnd.github.v3+json' }
+        });
+        if (res.status === 404) {
+          allData = []; fileSha = null; render(); return;
+        }
+        const json = await res.json();
+        fileSha = json.sha;
+        allData = JSON.parse(atob(json.content.replace(/\n/g, '')));
+      } catch(e) {
+        allData = [];
+      }
+      render();
     }
-    function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(allData)); }
+
+    async function saveData() {
+      const content = btoa(unescape(encodeURIComponent(JSON.stringify(allData, null, 2))));
+      const body = { message: 'update data', content };
+      if (fileSha) body.sha = fileSha;
+      const res = await fetch(API_BASE, {
+        method: 'PUT',
+        headers: { Authorization: `token ${GITHUB_TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const json = await res.json();
+      if (json.content) fileSha = json.content.sha;
+    }
+
     function generateId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
     function getCategories() { return [...new Set(allData.map(d => d.category).filter(Boolean))].sort(); }
 
-    // ── RENDER ──────────────────────────────────────────
+    // ── RENDER ───────────────────────────────────────
+
+    function showLoading() {
+      document.getElementById('view-home').innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+      document.getElementById('view-home').style.display = '';
+      document.getElementById('view-category').style.display = 'none';
+    }
 
     function render() {
       if (currentView === 'home') renderHome();
@@ -158,7 +204,6 @@
     function renderHome() {
       document.getElementById('view-home').style.display = '';
       document.getElementById('view-category').style.display = 'none';
-
       const cats = getCategories();
       const el = document.getElementById('view-home');
 
@@ -176,7 +221,7 @@
 
       el.innerHTML = `
         <p style="color:#b0b4c8;font-size:12px;margin-bottom:16px;">총 ${cats.length}개 카테고리 · ${allData.length}건의 소식</p>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;">
           ${cats.map((cat, i) => {
             const count = allData.filter(d => d.category === cat).length;
             const color = getCatColor(cat);
@@ -201,7 +246,6 @@
     function renderCategory() {
       document.getElementById('view-home').style.display = 'none';
       document.getElementById('view-category').style.display = '';
-
       const items = allData.filter(d => d.category === currentCategory)
         .sort((a,b) => (b.published_at||b.created_at||'').localeCompare(a.published_at||a.created_at||''));
       const color = getCatColor(currentCategory);
@@ -248,13 +292,13 @@
       lucide.createIcons();
     }
 
-    // ── NAVIGATION ───────────────────────────────────────
+    // ── NAVIGATION ───────────────────────────────────
 
     function goHome() { currentView = 'home'; currentCategory = null; render(); }
     function goCategory(cat) { currentView = 'category'; currentCategory = cat; render(); }
     function openLink(url) { if (url && url !== '#') window.open(url, '_blank', 'noopener,noreferrer'); }
 
-    // ── CATEGORY SELECT ──────────────────────────────────
+    // ── CATEGORY SELECT ──────────────────────────────
 
     function refreshCategorySelect() {
       const sel = document.getElementById('f-category-select');
@@ -270,7 +314,7 @@
       else { newInput.style.display = 'none'; newInput.value = ''; }
     }
 
-    // ── ADD / EDIT MODAL ─────────────────────────────────
+    // ── ADD / EDIT MODAL ─────────────────────────────
 
     function openAddModal() {
       editId = null;
@@ -284,7 +328,6 @@
       document.getElementById('f-category-new').style.display = 'none';
       document.getElementById('add-error').style.display = 'none';
       refreshCategorySelect();
-      // 현재 카테고리 보고 있으면 미리 선택
       if (currentCategory) document.getElementById('f-category-select').value = currentCategory;
       document.getElementById('modal-add').classList.add('active');
     }
@@ -309,7 +352,7 @@
 
     function closeAddModal() { document.getElementById('modal-add').classList.remove('active'); }
 
-    function handleSubmit() {
+    async function handleSubmit() {
       const title = document.getElementById('f-title').value.trim();
       const link = document.getElementById('f-link').value.trim();
       const pw = document.getElementById('f-password').value;
@@ -317,17 +360,19 @@
       const newCat = document.getElementById('f-category-new').value.trim();
       const category = selVal === '__new__' ? newCat : selVal;
       const errEl = document.getElementById('add-error');
+      const btn = document.getElementById('submit-btn');
 
       if (!title) { showError(errEl, '제목을 입력해주세요.'); return; }
       if (!link) { showError(errEl, '링크 URL을 입력해주세요.'); return; }
       if (!category) { showError(errEl, '카테고리를 선택하거나 입력해주세요.'); return; }
       if (pw !== ADMIN_PASSWORD) { showError(errEl, '비밀번호가 올바르지 않습니다.'); return; }
 
+      btn.disabled = true; btn.textContent = '저장 중...';
+
       const record = {
         title,
         description: document.getElementById('f-desc').value.trim(),
-        link,
-        category,
+        link, category,
         published_at: document.getElementById('f-date').value,
       };
 
@@ -338,14 +383,15 @@
         allData.unshift({ id: generateId(), created_at: new Date().toISOString(), ...record });
       }
 
-      saveData();
+      await saveData();
+      btn.disabled = false; btn.innerHTML = '<i data-lucide="save" style="width:16px;height:16px;"></i> 저장';
       closeAddModal();
-      // 새 카테고리면 그 카테고리로 이동
       if (!editId && currentView === 'home') goCategory(category);
       else render();
+      lucide.createIcons();
     }
 
-    // ── DELETE MODAL ─────────────────────────────────────
+    // ── DELETE MODAL ─────────────────────────────────
 
     function openDeleteModal(id) {
       deleteTarget = id;
@@ -359,26 +405,28 @@
       document.getElementById('modal-delete').classList.remove('active');
     }
 
-    function confirmDelete() {
+    async function confirmDelete() {
       const pw = document.getElementById('d-password').value;
       const errEl = document.getElementById('delete-error');
+      const btn = document.getElementById('delete-btn');
       if (pw !== ADMIN_PASSWORD) { showError(errEl, '비밀번호가 올바르지 않습니다.'); return; }
+
+      btn.disabled = true; btn.textContent = '삭제 중...';
       allData = allData.filter(d => d.id !== deleteTarget);
-      saveData();
+      await saveData();
+      btn.disabled = false; btn.textContent = '삭제';
       closeDeleteModal();
-      // 카테고리에 항목 없으면 홈으로
       if (currentCategory && allData.filter(d => d.category === currentCategory).length === 0) goHome();
       else render();
     }
 
-    // ── UTILS ─────────────────────────────────────────────
+    // ── UTILS ─────────────────────────────────────────
 
     function showError(el, msg) { el.textContent = msg; el.style.display = 'block'; }
 
-    // ── INIT ──────────────────────────────────────────────
+    // ── INIT ──────────────────────────────────────────
 
-    loadData();
-    render();
+    fetchData();
     lucide.createIcons();
   </script>
 </body>
