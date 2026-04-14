@@ -131,37 +131,19 @@
 
     // ── JSONBIN API ──────────────────────────────────
 
-    async function fetchData() {
-      showLoading();
-      try {
-        if (!BIN_ID) {
-          // 최초 실행: bin 생성
-          const res = await fetch(JSONBIN_URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Master-key': JSONBIN_API_KEY,
-              'X-Bin-Name': 'songsaeng',
-              'X-Bin-Private': 'true'
-            },
-            body: JSON.stringify([])
-          });
-          const json = await res.json();
-          BIN_ID = json.metadata.id;
-          localStorage.setItem('songsaeng_bin_id', BIN_ID);
-          allData = [];
-        } else {
-          const res = await fetch(`${JSONBIN_URL}/${BIN_ID}/latest`, {
-            headers: { 'X-Master-key': JSONBIN_API_KEY }
-          });
-          const json = await res.json();
-          allData = json.record || [];
-        }
-      } catch(e) {
-        allData = [];
-      }
-      render();
-    }
+async function fetchData() {
+  showLoading();
+  try {
+    const res = await fetch(`${JSONBIN_URL}/${BIN_ID}/latest`, {
+      headers: { 'X-Master-key': JSONBIN_API_KEY }
+    });
+    const json = await res.json();
+    allData = json.record || [];
+  } catch(e) {
+    allData = [];
+  }
+  render();
+}
 
     async function saveData() {
       if (!BIN_ID) return;
